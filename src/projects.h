@@ -283,6 +283,10 @@ typedef struct PJconsts {
         PJ_Region     last_after_region;
         double        last_after_date;
 
+        int n_ctl_pts;
+        double* x_ctl;
+        double* y_ctl;
+
 #ifdef PROJ_PARMS__
 PROJ_PARMS__
 #endif /* end of optional extensions */

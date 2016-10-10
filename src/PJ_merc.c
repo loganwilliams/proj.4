@@ -24,7 +24,7 @@ INVERSE(s_inverse); /* spheroid */
 	lp.lam = xy.x / P->k0;
 	return (lp);
 }
-FREEUP; if (P) pj_dalloc(P); }
+FREEUP;if (P) pj_dalloc(P); }
 ENTRY0(merc)
 	double phits=0.0;
 	int is_phits;

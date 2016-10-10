@@ -20,6 +20,8 @@ AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AM_PROG_LIBTOOL
 
+LT_INIT()
+
 dnl Checks for libraries.
 AC_CHECK_LIB(m,exp,,,)
 
