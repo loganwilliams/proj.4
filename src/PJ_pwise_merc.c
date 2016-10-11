@@ -21,6 +21,10 @@ FORWARD(s_forward); /* spheroid */
 	double mag_AB, AP_AB, AP_AB_o, distance_to_line, distance_along_line, total_segment_length = 0;
 	xy.y = LARGE;
 
+	double distance_to_lines[P->n_ctl_pts-1];
+	double distance_along_lines[P->n_ctl_pts-1];
+	double segment_lengths[P->n_ctl_pts-1];
+
 	for(int i = 0; i < P->n_ctl_pts-1; i++) {
 		// define vector from start of line segment to point
 		AP.x = p_xy.x - P->x_ctl[i];
@@ -43,26 +47,57 @@ FORWARD(s_forward); /* spheroid */
 		distance_to_line = AP_AB_o / mag_AB;
 		distance_along_line = AP_AB / mag_AB;
 
-		if (fabs(distance_to_line) < fabs(xy.y)) {
-			if (((distance_along_line < 0) && (i == 0)) || 
-				((distance_along_line >= 0) && (distance_along_line <= mag_AB)) ||
-				((distance_along_line > mag_AB) && (i == P->n_ctl_pts-2))) {
-				xy.y = -distance_to_line;
-				xy.x = distance_along_line + total_segment_length;
+		distance_to_lines[i] = distance_to_line;
+		distance_along_lines[i] = distance_along_line / mag_AB;
+		segment_lengths[i] = mag_AB;
+	}
+
+	double mindistance = LARGE;
+	int mindi = -1;
+
+	// look to see if the point is perpendicular from any line segment
+	// if it is perpendicular from many, take the line segment it is closest to
+	for(int i = 0; i < P->n_ctl_pts-1; i++) {
+		if ((distance_along_lines[i] >= 0) && (distance_along_lines[i] <= 1)) {
+			if (fabs(distance_to_lines[i]) < fabs(mindistance)) {
+				mindistance = distance_to_lines[i];
+				mindi = i;
+			}
+		}
+	}
+	
+	// if it is not perpendicular from any, take the line segment that it has the least "error" with
+	if (mindi == -1) {
+		double distance_error;
+
+		for(int i = 0; i < P->n_ctl_pts-1; i++) {
+			if (distance_along_lines[i] < 0) {
+				distance_error = fabs(distance_along_lines[i]) * segment_lengths[i];
+			} else if (distance_along_lines[i] > 1) {
+				distance_error = (distance_along_lines[i] - 1) * segment_lengths[i];
 			}
 
-			backup_xy.y = -distance_to_line;
-			backup_xy.x = distance_along_line + total_segment_length;
+			if (distance_error < mindistance) {
+				mindistance = distance_error;
+				mindi = i;
+			}
 		}
 
-		total_segment_length += mag_AB;
+
 	}
 
-	if (xy.y == LARGE) {
-		return (backup_xy);
-	} else {
-		return (xy);
+	xy.y = distance_to_lines[mindi];
+	total_segment_length = 0;
+
+	// add up all segments to get the X value
+	for (int i = 0; i < mindi; i++) {
+		total_segment_length += segment_lengths[i];
 	}
+
+	xy.x = total_segment_length + distance_along_lines[mindi] * segment_lengths[mindi];
+
+	return (xy);
+
 }
 
 
