@@ -4,7 +4,6 @@
 #include <math.h>
 PROJ_HEAD(pwise_merc, "Piecewise Mercator") "\n\tCyl, Sph&Ell\n\tlat_ts=";
 #define EPS10 1.e-10
-#define LARGE 100000.0
 
 FORWARD(merc_forward);
 	if (fabs(fabs(lp.phi) - HALFPI) <= EPS10) F_ERROR;
@@ -19,7 +18,6 @@ FORWARD(s_forward); /* spheroid */
 	XY AP, AB, AB_o, backup_xy;
 
 	double mag_AB, AP_AB, AP_AB_o, distance_to_line, distance_along_line, total_segment_length = 0;
-	xy.y = LARGE;
 
 	double distance_to_lines[P->n_ctl_pts-1];
 	double distance_along_lines[P->n_ctl_pts-1];
