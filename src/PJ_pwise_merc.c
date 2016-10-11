@@ -108,16 +108,12 @@ INVERSE(merc_inverse); /* spheroid */
 }
 
 INVERSE(s_inverse); /* spheroid */
-	// FILE* fp =  fopen("/Users/loganw/proj4db.txt", "a");
-
-	// fprintf(fp, "Inverting point (%f, %f)\n", xy.x, xy.y);	
-	// what are the coordinates of the forward projection
-
-	// who's line am i on anyway
+	// first step is to put the piecewise X/Y coords back into mercator X/Y coords
 	int pointi = 0;
 	double x = xy.x;
 	double segment_distance;
 
+	// who's (control segment) line is it anyway?
 	segment_distance = sqrt(pow(P->x_ctl[pointi] - P->x_ctl[pointi+1], 2) + pow(P->y_ctl[pointi] - P->y_ctl[pointi+1], 2));
 
 	while (pointi < P->n_ctl_pts - 2) {
@@ -131,25 +127,22 @@ INVERSE(s_inverse); /* spheroid */
 		}
 	}
 
+	// location of the point on its control segment
 	XY p_on_line;
 	p_on_line.x = P->x_ctl[pointi] + (x * (P->x_ctl[pointi+1] - P->x_ctl[pointi])) / segment_distance;
 	p_on_line.y = P->y_ctl[pointi] + (x * (P->y_ctl[pointi+1] - P->y_ctl[pointi])) / segment_distance;
 
-	// fprintf(fp, "pointi: %d, segment-distance: %f, distance: %f\n", pointi, segment_distance, x);
-	// fprintf(fp, "\tpoint on line: (%f, %f)\n", p_on_line.x, p_on_line.y);
-
+	// perpendicular unit vector
 	XY perp;
 	perp.x = -(P->y_ctl[pointi+1] - P->y_ctl[pointi]) / segment_distance;
 	perp.y = -(P->x_ctl[pointi] - P->x_ctl[pointi+1]) / segment_distance;
 
+	// location of the final point in mercator space
 	p_on_line.x += perp.x * xy.y;
 	p_on_line.y += perp.y * xy.y;
 
+	// convert mercator X/Y coords back into lat/lon
 	lp = merc_inverse(p_on_line, P);
-	// fprintf(fp, "Fixed point:   (%f, %f)\n", p_on_line.x, p_on_line.y);
-	// fprintf(fp, "Inverted coords: (%f, %f)\n", lp.lam, lp.phi);
-
-	// fclose(fp);
 
 	return (lp);
 }
