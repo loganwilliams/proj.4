@@ -153,16 +153,10 @@ ENTRY0(pwise_merc)
 	int is_phits;
 	int n_ctl_pts = 0; 
 
-	// open file for debugging output
-	// FILE* fp = fopen("/Users/loganw/proj4db.txt", "w");
-	// fprintf(fp, "a,b,c,d,e,f\n");
-	// fprintf(fp, "P->es: %f\n", P->es);
 
 	// read control point parameters
 	if (pj_param(P->ctx, P->params, "tn_ctl_pts").i ) {
 		n_ctl_pts = pj_param(P->ctx, P->params, "in_ctl_pts").i;
-		// fprintf(fp, "n_ctl_pts: %d\n", n_ctl_pts);
-
 
 		LP ctl_lp;
 		XY ctl_xy;
@@ -183,8 +177,6 @@ ENTRY0(pwise_merc)
 			ctl_xy = merc_forward(ctl_lp, P);
 			x_ctl[i] = ctl_xy.x;
 			y_ctl[i] = ctl_xy.y;
-
-			// fprintf(fp, "Control point %i: (%f, %f) -> (%f, %f)\n", i, ctl_lp.phi, ctl_lp.lam, x_ctl[i], y_ctl[i]);
 		}
 
 		// save ctl pts in projection struct
@@ -203,38 +195,5 @@ ENTRY0(pwise_merc)
 
 	P->inv = s_inverse;
 	P->fwd = s_forward;
-
-	// below this is testing code
-
-	// fprintf(fp,"start\n");
-	// for(double p = 0.653; p < 0.667; p += 0.0001) {
-	// 	for(double l = -2.140; l < -2.130; l += 0.0001) {
-	// 		LP test_point;
-	// 		test_point.phi = p;
-	// 		test_point.lam = l;
-	// 		XY merc_point = s_forward(test_point, P);
-	// 		fprintf(fp, "%f, %f, %f, %f\n", p, l, merc_point.x, merc_point.y);
-	// 	}
-	// }
-
-	// fprintf(fp,"stop\n");
-	
-	// LP test_point;
-	// test_point.phi = 0.6591083029;
-	// test_point.lam = -2.136660;
-
-	// fprintf(fp, "Test lam/phi    : (%f, %f)\n", test_point.lam, test_point.phi);
-	// XY merc_point_fwd = merc_forward(test_point, P);
-	// fprintf(fp, "Merc X/Y        : (%f, %f)\n", merc_point_fwd.x, merc_point_fwd.y);
-	// LP merc_point_inv = merc_inverse(merc_point_fwd, P);
-	// fprintf(fp, "Merc lam/phi inv: (%f, %f)\n", merc_point_inv.lam, merc_point_inv.phi);
-	
-	// XY test_point_fwd = s_forward(test_point, P);
-	// fprintf(fp, "Test X/Y        : (%f, %f)\n", test_point_fwd.x, test_point_fwd.y);
-	// LP test_point_inv = s_inverse(test_point_fwd, P);
-	// fprintf(fp, "Test lam/phi inv: (%f, %f)\n", test_point_inv.lam, test_point_inv.phi);
-
-	// close debugging file
-	// fclose(fp);
 
 ENDENTRY(P)
