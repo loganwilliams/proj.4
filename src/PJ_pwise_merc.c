@@ -4,6 +4,7 @@
 #include <math.h>
 PROJ_HEAD(pwise_merc, "Piecewise Mercator") "\n\tCyl, Sph&Ell\n\tlat_ts=";
 #define EPS10 1.e-10
+#define LARGE 1e6
 
 FORWARD(merc_forward);
 	if (fabs(fabs(lp.phi) - HALFPI) <= EPS10) F_ERROR;
@@ -92,7 +93,7 @@ FORWARD(s_forward); /* spheroid */
 		total_segment_length += segment_lengths[i];
 	}
 
-	xy.x = total_segment_length + distance_along_lines[mindi] * segment_lengths[mindi];
+	xy.x = -(total_segment_length + distance_along_lines[mindi] * segment_lengths[mindi]);
 
 	return (xy);
 
@@ -108,7 +109,7 @@ INVERSE(merc_inverse); /* spheroid */
 INVERSE(s_inverse); /* spheroid */
 	// first step is to put the piecewise X/Y coords back into mercator X/Y coords
 	int pointi = 0;
-	double x = xy.x;
+	double x = -xy.x;
 	double segment_distance;
 
 	// who's (control segment) line is it anyway?
